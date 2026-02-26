@@ -147,6 +147,11 @@ void opaque::SetSize(uint32 len)
     memset(contents, 0, length);
 }
 
+void opaque::SetActualLength(uint32 len)
+{
+    length = len;
+}
+
 nfs_fh3::nfs_fh3() : opaque(NFS3_FHSIZE)
 {
 }
@@ -691,7 +696,7 @@ nfsstat3 CNFS3Prog::ProcedureREAD(void)
         if (pFile != NULL) {
             _fseeki64(pFile, offset, SEEK_SET);
             count = fread(data.contents, sizeof(char), count, pFile);
-            data.SetSize(count);
+            data.SetActualLength(count);
             eof = fgetc(pFile) == EOF;
             fclose(pFile);
         } else {
