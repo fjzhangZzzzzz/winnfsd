@@ -689,8 +689,9 @@ nfsstat3 CNFS3Prog::ProcedureREAD(void)
         pFile = _fsopen(cStr, "rb", _SH_DENYWR);
 
         if (pFile != NULL) {
-            _fseeki64(pFile, offset, SEEK_SET) ;
+            _fseeki64(pFile, offset, SEEK_SET);
             count = fread(data.contents, sizeof(char), count, pFile);
+            data.SetSize(count);
             eof = fgetc(pFile) == EOF;
             fclose(pFile);
         } else {

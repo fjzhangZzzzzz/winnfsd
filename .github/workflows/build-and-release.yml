@@ -1,0 +1,39 @@
+name: Build and Release WinNFSd
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build WinNFSd (Release)
+        run: msbuild src\WinNFSd.sln /p:Configuration=Release
+
+      - name: Upload WinNFSd.exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WinNFSd-Release
+          path: src\Release\WinNFSd.exe
+
+      - name: Create GitHub Release and upload asset
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: src/Release/WinNFSd.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
